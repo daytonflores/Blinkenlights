@@ -58,6 +58,17 @@
 #define BLU_LED_ON()				(PTD->PCOR |= MASK(PORTD_BLU_LED_PIN))
 #define BLU_LED_OFF()				(PTD->PSOR |= MASK(PORTD_BLU_LED_PIN))
 #define BLU_LED_TOGGLE()			(PTD->PTOR |= MASK(PORTD_BLU_LED_PIN))
+
+#define TSI0_MODE_NON_NOISE			(0UL)
+#define TSI0_REFCHRG_500_NANO_AMP	(0UL)
+#define TSI0_DVOLT_DEFAULT			(0UL)
+#define TSI0_EXTCHRG_500_NANO_AMP	(0UL)
+#define TSI0_PS_CLK_FREQ_DIV_BY_1	(0UL)
+#define TSI0_NSCN_32_TIMES			(31UL)
+#define TSI0_CHANNEL_10				(10UL)
+#define TOUCH_OFFSET				(700)
+#define TOUCH_DATA 					(TSI0->DATA & 0xFFFF)
+
 #define CLK_FREQ_IN_HZ				(48000000/5)
 #define CLK_CYCLES_PER_ITERATION	(3)
 #define ITERATIONS_FOR_1_SEC		(CLK_FREQ_IN_HZ/CLK_CYCLES_PER_ITERATION)
@@ -113,8 +124,6 @@ void init_onboard_leds(void){
 	/**
      * Enable clock to Port B for red + green on-board LEDs
      * Enable clock to Port D for blue on-board LED
-     *
-     * SCGC5
      */
     SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK + SIM_SCGC5_PORTD_MASK;
 
@@ -187,6 +196,64 @@ void init_onboard_leds(void){
 	BLU_LED_OFF();
 	DELAY_100_MSEC();
 }
+
+ /**
+  * \fn void init_onboard_touch_sensor
+  * \brief Initialize capacitive touch sensor. Referenced operations from https://github.com/alexander-g-dean/ESF/tree/master/NXP/Misc/Touch%20Sense
+  * \param N/A
+  * \return N/A
+  *
+  * \detail Many operations were referenced from Alexander G Dean's TSI project on GitHub (see brief for link)
+  * 		TSI: 		Touch Sensing Interface refers to interfacing with the on-board capacitive touch pad
+  * 		SIM:		System Integration Module is a peripheral containing many control registers, including SCGC5
+  * 		SCGC5:		System Clock Gating Control Register 5 is a register containing different controls, including clock gating for TSI
+  * 		TSI0:		TSI peripheral 0 (there are 16 channels for each TSI peripheral, though this board only has 1 on-board TSI peripheral)
+  * 		GENCS:		General Control and Status Register for TSI module (where each channel 0-15 has its own GENCS register)
+  * 		MODE:		GENCS configuration for TSI operation mode. 4 modes available:
+  * 						- 0: Non-noise mode
+  * 						- 1: Noise threshold detection mode
+  * 						- 2: Noise threshold detection mode
+  * 						- 3: Automatic noise detection mode
+  * 		REFCHRG:	GENCS configuration for reference oscillator charge/discharge. 8 values available from 500 nA to 64 uA
+  * 		DVOLT:		GENCS configuration for oscillator voltage rails. 4 levels available
+  * 						- 0:
+  * 						- 1:
+  * 						- 2:
+  * 						- 3:
+  * 		EXCHRG:		GENCS configuration for electrode oscillator charge/discharge. 8 values available from 500 nA to 64 uA
+  * 		PS:			GENCS configuration for clock divisor value. 8 values available from 1 to 128
+  * 		NSCN:		GENCS configuration for electrode oscillator count used in making scan. Value can be any value between 1 and 32, inclusive
+  * 		TSIEN:		GENCS configuration for enabling/disabling TSI module. 0 to disable, 1 to enable
+  * 		EOSF:		GENCS configuration for end-of-scan flag. 0 means scan incomplete, 1 means scan complete. To clear this flag, write 1 to it
+  */
+ void init_onboard_touch_sensor(void){
+	/**
+	 * Enable clock to TSI module
+	 */
+	SIM->SCGC5 |= SIM_SCGC5_TSI_MASK;
+
+	/**
+	 * Configure TSI0 as:
+	 * 	- Operate in non-noise mode
+	 * 	- Reference oscillator charge and discharge value of 500 nA
+	 * 	- Oscillator voltage rails set to default
+	 * 	- Electrode oscillator charge and discharge value of 500 nA
+	 * 	- Frequency clock divided by 1
+	 * 	- Scan electrode 32 times
+	 * 	- Enable the TSI module
+	 * 	- Write 1 to clear the end of scan flag
+	 */
+	TSI0->GENCS = \
+			TSI_GENCS_MODE(TSI0_MODE_NON_NOISE) |\
+			TSI_GENCS_REFCHRG(TSI0_REFCHRG_500_NANO_AMP) |\
+			TSI_GENCS_DVOLT(TSI0_DVOLT_DEFAULT) |\
+			TSI_GENCS_EXTCHRG(TSI0_EXTCHRG_500_NANO_AMP) |\
+			TSI_GENCS_PS(TSI0_PS_CLK_FREQ_DIV_BY_1) |\
+			TSI_GENCS_NSCN(TSI0_NSCN_32_TIMES) |\
+			TSI_GENCS_TSIEN_MASK |
+			TSI_GENCS_EOSF_MASK;
+
+ }
 
  /**
   * \fn void blink_sequence
@@ -279,13 +346,49 @@ int main(void) {
 
     PRINTF("Hello World\r\n");
 
-    /* Force the counter to be placed into memory. */
-    volatile static int i;
-
     /**
      * Initialize all 3 on-board LEDs (red, green, blue)
      */
     init_onboard_leds();
+
+    /**
+     * Initialize on-board TSI
+     */
+    init_onboard_touch_sensor();
+
+    unsigned int scan;
+
+    while(1){
+    	/**
+    	 * Select TSI0 channel 10
+    	 */
+    	TSI0->DATA = TSI_DATA_TSICH(TSI0_CHANNEL_10);
+
+    	/**
+    	 * Software trigger to start scan
+    	 */
+    	TSI0->DATA |= TSI_DATA_SWTS_MASK;
+
+    	/**
+    	 * Wait for scan to complete 32 times
+    	 */
+    	while(!(TSI0->GENCS & TSI_GENCS_EOSF_MASK));
+
+    	/**
+    	 * Now that scan has completed 32 times, store the data
+    	 */
+    	scan = TOUCH_DATA;
+
+    	/**
+    	 * Clear the end-of-scan flag
+    	 */
+    	TSI0->GENCS |= TSI_GENCS_EOSF_MASK;
+
+    	/**
+    	 * Display adjusted scan value, taking into account TOUCH_OFFSET
+    	 */
+    	 PRINTF("Scanned value = %d\r\n", scan - TOUCH_OFFSET);
+    }
 
     /**
      *  Enter blink_sequence which contains an infinite loop

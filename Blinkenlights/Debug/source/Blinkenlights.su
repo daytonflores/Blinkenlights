@@ -1,3 +1,4 @@
-../source/Blinkenlights.c:107:6:init_onboard_leds	8	static
-../source/Blinkenlights.c:204:7:blink_sequence	8	static
-../source/Blinkenlights.c:269:5:main	8	static
+../source/Blinkenlights.c:118:6:init_onboard_leds	8	static
+../source/Blinkenlights.c:229:7:init_onboard_touch_sensor	8	static
+../source/Blinkenlights.c:271:7:blink_sequence	8	static
+../source/Blinkenlights.c:336:5:main	16	static

@@ -147,8 +147,8 @@
 #define GET_LED_COLOR()				do{\
 										onboard_led_prev = onboard_led;\
 										\
-										if(scanned_value < TOUCH_UNTOUCHED_MAX && onboard_led_prev == white){\
-											onboard_led = white;\
+										if(scanned_value < TOUCH_UNTOUCHED_MAX){\
+											onboard_led = onboard_led_prev;\
 										}\
 										else if(scanned_value < TOUCH_LEFT_MAX){\
 											onboard_led = red;\
@@ -171,28 +171,11 @@
 #define CLK_FREQ_IN_HZ				(48000000/5)
 #define CLK_CYCLES_PER_ITERATION	(3)
 #define ITERATIONS_FOR_1_SEC		(CLK_FREQ_IN_HZ/CLK_CYCLES_PER_ITERATION)
-#define ITERATIONS_FOR_500_MSEC		(ITERATIONS_FOR_1_SEC/2)
 #define ITERATIONS_FOR_100_MSEC		(ITERATIONS_FOR_1_SEC/10)
-#define DELAY_1_SEC()				do{\
-										i = 0;\
-										while((i++) < ITERATIONS_FOR_1_SEC){\
-											__asm volatile ("nop");\
-										}\
-										i = 0;\
-									}while(0)
-#define DELAY_500_MSEC()			do{\
-										i = 0;\
-										while((i++) < ITERATIONS_FOR_500_MSEC){\
-											__asm volatile ("nop");\
-										}\
-										i = 0;\
-									}while(0)
 #define DELAY_100_MSEC()			do{\
-										i = 0;\
-										while((i++) < ITERATIONS_FOR_100_MSEC){\
+										for(int i_delay = 0; i_delay < ITERATIONS_FOR_100_MSEC; i_delay++){\
 											__asm volatile ("nop");\
 										}\
-										i = 0;\
 									}while(0)
 
 typedef enum {
@@ -222,10 +205,11 @@ typedef enum {
  *		PTOR:	Port Toggle Output Register is a register used to toggle some bits on the respective port A-E (e.g. writing 0x00000070 to PTA-PTOR will toggle bits 6:4 on Port A)
  */
 void init_onboard_leds(void){
-    /**
-     *  Force the counter to be placed into memory
-     */
-    volatile static int i;
+
+	/**
+	 *  Force the counter to be placed into memory
+	 */
+	volatile static int i;
 
 	/**
      * Enable clock to Port B for red + green on-board LEDs
@@ -270,17 +254,23 @@ void init_onboard_leds(void){
      * Turn white LED (red + green + blue) on for 100 msec, and then off for 100 msec
      */
     LED_ON(red);
-    DELAY_500_MSEC();
+	for(i = 0; i < 5; i++){
+		DELAY_100_MSEC();
+	}
 	LED_OFF(red);
 	DELAY_100_MSEC();
 
     LED_ON(green);
-	DELAY_500_MSEC();
+	for(i = 0; i < 5; i++){
+		DELAY_100_MSEC();
+	}
     LED_ON(green);
 	DELAY_100_MSEC();
 
     LED_ON(blue);
-	DELAY_500_MSEC();
+	for(i = 0; i < 5; i++){
+		DELAY_100_MSEC();
+	}
     LED_ON(blue);
 	DELAY_100_MSEC();
 
@@ -389,27 +379,40 @@ void init_onboard_leds(void){
 	onboard_led = white;
 	onboard_led_prev = white;
 	LED_ON(onboard_led);
-	DELAY_500_MSEC();
+	for(i = 0; i < 5; i++){
+		DELAY_100_MSEC();
+	}
 	LED_OFF(onboard_led);
-	DELAY_500_MSEC();
+	for(i = 0; i < 5; i++){
+		DELAY_100_MSEC();
+	}
 
 	LED_ON(onboard_led);
-	DELAY_1_SEC();
+	for(i = 0; i < 10; i++){
+		DELAY_100_MSEC();
+	}
 	LED_OFF(onboard_led);
-	DELAY_500_MSEC();
+	for(i = 0; i < 5; i++){
+		DELAY_100_MSEC();
+	}
 
 	LED_ON(onboard_led);
-	DELAY_1_SEC();
-	DELAY_1_SEC();
+	for(i = 0; i < 20; i++){
+		DELAY_100_MSEC();
+	}
 	LED_OFF(onboard_led);
-	DELAY_500_MSEC();
+	for(i = 0; i < 5; i++){
+		DELAY_100_MSEC();
+	}
 
 	LED_ON(onboard_led);
-	DELAY_1_SEC();
-	DELAY_1_SEC();
-	DELAY_1_SEC();
+	for(i = 0; i < 30; i++){
+		DELAY_100_MSEC();
+	}
 	LED_OFF(onboard_led);
-	DELAY_500_MSEC();
+	for(i = 0; i < 5; i++){
+		DELAY_100_MSEC();
+	}
 
 	while(1){
 		/**
@@ -423,271 +426,56 @@ void init_onboard_leds(void){
 		GET_LED_COLOR();
 
 		LED_ON(onboard_led);
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
+		for(i = 0; i < 5; i++){
+			DELAY_100_MSEC();
+			GET_TOUCH();
+			GET_LED_COLOR();
+		}
 		LED_OFF(onboard_led);
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
+		for(i = 0; i < 5; i++){
+			DELAY_100_MSEC();
+			GET_TOUCH();
+			GET_LED_COLOR();
+		}
 
 		LED_ON(onboard_led);
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
+		for(i = 0; i < 10; i++){
+			DELAY_100_MSEC();
+			GET_TOUCH();
+			GET_LED_COLOR();
+		}
 		LED_OFF(onboard_led);
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
+		for(i = 0; i < 5; i++){
+			DELAY_100_MSEC();
+			GET_TOUCH();
+			GET_LED_COLOR();
+		}
 
 		LED_ON(onboard_led);
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
+		for(i = 0; i < 20; i++){
+			DELAY_100_MSEC();
+			GET_TOUCH();
+			GET_LED_COLOR();
+		}
 		LED_OFF(onboard_led);
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
+		for(i = 0; i < 5; i++){
+			DELAY_100_MSEC();
+			GET_TOUCH();
+			GET_LED_COLOR();
+		}
 
 		LED_ON(onboard_led);
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
+		for(i = 0; i < 30; i++){
+			DELAY_100_MSEC();
+			GET_TOUCH();
+			GET_LED_COLOR();
+		}
 		LED_OFF(onboard_led);
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
-		DELAY_100_MSEC();
-		GET_TOUCH();
-		GET_LED_COLOR();
+		for(i = 0; i < 5; i++){
+			DELAY_100_MSEC();
+			GET_TOUCH();
+			GET_LED_COLOR();
+		}
 	}
  }
 

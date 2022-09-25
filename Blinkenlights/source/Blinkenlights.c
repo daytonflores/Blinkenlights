@@ -58,7 +58,9 @@
 #define BLU_LED_ON()				(PTD->PCOR |= MASK(PORTD_BLU_LED_PIN))
 #define BLU_LED_OFF()				(PTD->PSOR |= MASK(PORTD_BLU_LED_PIN))
 #define BLU_LED_TOGGLE()			(PTD->PTOR |= MASK(PORTD_BLU_LED_PIN))
-
+#define CLK_FREQ_IN_HZ				(48000000/5)
+#define CLK_CYCLES_PER_ITERATION	(3)
+#define ITERATIONS_FOR_1_SEC		(CLK_FREQ_IN_HZ/CLK_CYCLES_PER_ITERATION)
 
 /**
  * \fn void init_onboard_leds (void)
@@ -151,7 +153,14 @@ int main(void) {
 
     	i = 0;
 
-    	while((i++) < 5000000){
+    	/**
+    	 * Each iteration in this loop does:
+    	 * 	- 1 ldr (2 clock cycles)
+    	 * 	- 1 nop (1 clock cycle)
+    	 *
+    	 * Operation is estimated to run on max frequency 48 MHz divided by 5 (~9.6 MHz)
+    	 */
+    	while((i++) < ITERATIONS_FOR_1_SEC){
             /* 'Dummy' NOP to allow source level single stepping of
                 tight while() loop */
             __asm volatile ("nop");

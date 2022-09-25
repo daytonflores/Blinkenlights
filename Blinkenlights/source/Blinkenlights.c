@@ -49,15 +49,66 @@
 #define PORTB_RED_LED_PIN			(18)
 #define PORTB_GRN_LED_PIN			(19)
 #define PORTD_BLU_LED_PIN			(1)
-#define RED_LED_ON()				(PTB->PCOR |= MASK(PORTB_RED_LED_PIN))
-#define RED_LED_OFF()				(PTB->PSOR |= MASK(PORTB_RED_LED_PIN))
-#define RED_LED_TOGGLE()			(PTB->PTOR |= MASK(PORTB_RED_LED_PIN))
-#define GRN_LED_ON()				(PTB->PCOR |= MASK(PORTB_GRN_LED_PIN))
-#define GRN_LED_OFF()				(PTB->PSOR |= MASK(PORTB_GRN_LED_PIN))
-#define GRN_LED_TOGGLE()			(PTB->PTOR |= MASK(PORTB_GRN_LED_PIN))
-#define BLU_LED_ON()				(PTD->PCOR |= MASK(PORTD_BLU_LED_PIN))
-#define BLU_LED_OFF()				(PTD->PSOR |= MASK(PORTD_BLU_LED_PIN))
-#define BLU_LED_TOGGLE()			(PTD->PTOR |= MASK(PORTD_BLU_LED_PIN))
+#define LED_ON(x)					do{\
+										switch(x){\
+											case white:\
+												(PTB->PCOR |= MASK(PORTB_RED_LED_PIN));\
+												(PTB->PCOR |= MASK(PORTB_GRN_LED_PIN));\
+												(PTD->PCOR |= MASK(PORTD_BLU_LED_PIN));\
+												break;\
+											case red:\
+												(PTB->PCOR |= MASK(PORTB_RED_LED_PIN));\
+												break;\
+											case green:\
+												(PTB->PCOR |= MASK(PORTB_GRN_LED_PIN));\
+												break;\
+											case blue:\
+												(PTD->PCOR |= MASK(PORTD_BLU_LED_PIN));\
+												break;\
+											default:\
+												break;\
+										}\
+									}while(0)
+#define LED_OFF(x)					do{\
+										switch(x){\
+											case white:\
+												(PTB->PSOR |= MASK(PORTB_RED_LED_PIN));\
+												(PTB->PSOR |= MASK(PORTB_GRN_LED_PIN));\
+												(PTD->PSOR |= MASK(PORTD_BLU_LED_PIN));\
+												break;\
+											case red:\
+												(PTB->PSOR |= MASK(PORTB_RED_LED_PIN));\
+												break;\
+											case green:\
+												(PTB->PSOR |= MASK(PORTB_GRN_LED_PIN));\
+												break;\
+											case blue:\
+												(PTD->PSOR |= MASK(PORTD_BLU_LED_PIN));\
+												break;\
+											default:\
+												break;\
+										}\
+									}while(0)
+#define LED_TOGGLE(x)				do{\
+										switch(x){\
+											case white:\
+												(PTB->PTOR |= MASK(PORTB_RED_LED_PIN));\
+												(PTB->PTOR |= MASK(PORTB_GRN_LED_PIN));\
+												(PTD->PTOR |= MASK(PORTD_BLU_LED_PIN));\
+												break;\
+											case red:\
+												(PTB->PTOR |= MASK(PORTB_RED_LED_PIN));\
+												break;\
+											case green:\
+												(PTB->PTOR |= MASK(PORTB_GRN_LED_PIN));\
+												break;\
+											case blue:\
+												(PTD->PTOR |= MASK(PORTD_BLU_LED_PIN));\
+												break;\
+											default:\
+												break;\
+										}\
+									}while(0)
 
 #define TSI0_MODE_NON_NOISE			(0UL)
 #define TSI0_REFCHRG_500_NANO_AMP	(0UL)
@@ -68,6 +119,54 @@
 #define TSI0_CHANNEL_10				(10UL)
 #define TOUCH_OFFSET				(700)
 #define TOUCH_DATA 					(TSI0->DATA & 0xFFFF)
+#define TOUCH_UNTOUCHED_MAX			(100)
+#define TOUCH_LEFT_MAX				(500)
+#define TOUCH_RIGHT_MIN				(2000)
+#define GET_TOUCH()					do{\
+										/**
+										 * Select TSI0 channel 10
+										 */\
+										TSI0->DATA = TSI_DATA_TSICH(TSI0_CHANNEL_10);\
+								    	/**
+								    	 * Software trigger to start scan
+								    	 */\
+										TSI0->DATA |= TSI_DATA_SWTS_MASK;\
+								    	/**
+								    	 * Wait for scan to complete 32 times
+								    	 */\
+										while(!(TSI0->GENCS & TSI_GENCS_EOSF_MASK));\
+								    	/**
+								    	 * Now that scan has completed 32 times, store the data and subtract TOUCH_OFFSET
+								    	 */\
+										scanned_value = TOUCH_DATA - TOUCH_OFFSET;\
+								    	/**
+								    	 * Clear the end-of-scan flag
+								    	 */\
+										TSI0->GENCS |= TSI_GENCS_EOSF_MASK;\
+									}while(0)
+#define GET_LED_COLOR()				do{\
+										onboard_led_prev = onboard_led;\
+										\
+										if(scanned_value < TOUCH_UNTOUCHED_MAX && onboard_led_prev == white){\
+											onboard_led = white;\
+										}\
+										else if(scanned_value < TOUCH_LEFT_MAX){\
+											onboard_led = red;\
+										}\
+										else if(scanned_value < TOUCH_RIGHT_MIN){\
+											onboard_led = green;\
+										}\
+										else{\
+											onboard_led = blue;\
+										}\
+										\
+										if(onboard_led != onboard_led_prev){\
+											LED_OFF(onboard_led_prev);\
+											LED_ON(onboard_led);\
+										}\
+										\
+										PRINTF("Scanned value = %d\r\n", scanned_value);\
+									}while(0)
 
 #define CLK_FREQ_IN_HZ				(48000000/5)
 #define CLK_CYCLES_PER_ITERATION	(3)
@@ -95,6 +194,13 @@
 										}\
 										i = 0;\
 									}while(0)
+
+typedef enum {
+	white,
+	red,
+	green,
+	blue
+} color;
 
 /**
  * \fn void init_onboard_leds
@@ -152,9 +258,9 @@ void init_onboard_leds(void){
     /**
      * Turn all on-board LEDs off. Note that on-board LEDs are active-low
      */
-    RED_LED_OFF();
-    GRN_LED_OFF();
-    BLU_LED_OFF();
+    LED_OFF(red);
+    LED_OFF(green);
+    LED_OFF(blue);
 
     /**
      * Turn red LED on for 500 msec, and then off for 100 msec
@@ -163,37 +269,29 @@ void init_onboard_leds(void){
      * Turn white LED (red + green + blue) on for 100 msec, and then off for 100 msec
      * Turn white LED (red + green + blue) on for 100 msec, and then off for 100 msec
      */
-    RED_LED_ON();
+    LED_ON(red);
     DELAY_500_MSEC();
-	RED_LED_OFF();
+	LED_OFF(red);
 	DELAY_100_MSEC();
 
-	GRN_LED_ON();
+    LED_ON(green);
 	DELAY_500_MSEC();
-	GRN_LED_OFF();
+    LED_ON(green);
 	DELAY_100_MSEC();
 
-	BLU_LED_ON();
+    LED_ON(blue);
 	DELAY_500_MSEC();
-	BLU_LED_OFF();
+    LED_ON(blue);
 	DELAY_100_MSEC();
 
-	RED_LED_ON();
-	GRN_LED_ON();
-	BLU_LED_ON();
+	LED_ON(white);
 	DELAY_100_MSEC();
-	RED_LED_OFF();
-	GRN_LED_OFF();
-	BLU_LED_OFF();
+	LED_OFF(white);
 	DELAY_100_MSEC();
 
-	RED_LED_ON();
-	GRN_LED_ON();
-	BLU_LED_ON();
+	LED_ON(white);
 	DELAY_100_MSEC();
-	RED_LED_OFF();
-	GRN_LED_OFF();
-	BLU_LED_OFF();
+	LED_OFF(white);
 	DELAY_100_MSEC();
 }
 
@@ -275,11 +373,43 @@ void init_onboard_leds(void){
 	volatile static int i;
 
 	/**
+	 *  To keep track of scanned value from TSI (after subtracting TOUCH_OFFSET)
+	 */
+	static unsigned int scanned_value;
+
+	/**
+	 *
+	 */
+	color onboard_led;
+	color onboard_led_prev;
+
+	/**
 	 * Initially the LED will be white
 	 */
-	RED_LED_ON();
-	GRN_LED_ON();
-	BLU_LED_ON();
+	onboard_led = white;
+	onboard_led_prev = white;
+	LED_ON(onboard_led);
+	DELAY_500_MSEC();
+	LED_OFF(onboard_led);
+	DELAY_500_MSEC();
+
+	LED_ON(onboard_led);
+	DELAY_1_SEC();
+	LED_OFF(onboard_led);
+	DELAY_500_MSEC();
+
+	LED_ON(onboard_led);
+	DELAY_1_SEC();
+	DELAY_1_SEC();
+	LED_OFF(onboard_led);
+	DELAY_500_MSEC();
+
+	LED_ON(onboard_led);
+	DELAY_1_SEC();
+	DELAY_1_SEC();
+	DELAY_1_SEC();
+	LED_OFF(onboard_led);
+	DELAY_500_MSEC();
 
 	while(1){
 		/**
@@ -289,44 +419,275 @@ void init_onboard_leds(void){
 		 * ON for 3000 msec, OFF for 500 msec
 		 *
 		 */
-		RED_LED_ON();
-		GRN_LED_ON();
-		BLU_LED_ON();
-		DELAY_500_MSEC();
-		RED_LED_OFF();
-		GRN_LED_OFF();
-		BLU_LED_OFF();
-		DELAY_500_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
 
-		RED_LED_ON();
-		GRN_LED_ON();
-		BLU_LED_ON();
-		DELAY_1_SEC();
-		RED_LED_OFF();
-		GRN_LED_OFF();
-		BLU_LED_OFF();
-		DELAY_500_MSEC();
+		LED_ON(onboard_led);
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		LED_OFF(onboard_led);
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
 
-		RED_LED_ON();
-		GRN_LED_ON();
-		BLU_LED_ON();
-		DELAY_1_SEC();
-		DELAY_1_SEC();
-		RED_LED_OFF();
-		GRN_LED_OFF();
-		BLU_LED_OFF();
-		DELAY_500_MSEC();
+		LED_ON(onboard_led);
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		LED_OFF(onboard_led);
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
 
-		RED_LED_ON();
-		GRN_LED_ON();
-		BLU_LED_ON();
-		DELAY_1_SEC();
-		DELAY_1_SEC();
-		DELAY_1_SEC();
-		RED_LED_OFF();
-		GRN_LED_OFF();
-		BLU_LED_OFF();
-		DELAY_500_MSEC();
+		LED_ON(onboard_led);
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		LED_OFF(onboard_led);
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+
+		LED_ON(onboard_led);
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		LED_OFF(onboard_led);
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
+		DELAY_100_MSEC();
+		GET_TOUCH();
+		GET_LED_COLOR();
 	}
  }
 
@@ -355,40 +716,6 @@ int main(void) {
      * Initialize on-board TSI
      */
     init_onboard_touch_sensor();
-
-    unsigned int scan;
-
-    while(1){
-    	/**
-    	 * Select TSI0 channel 10
-    	 */
-    	TSI0->DATA = TSI_DATA_TSICH(TSI0_CHANNEL_10);
-
-    	/**
-    	 * Software trigger to start scan
-    	 */
-    	TSI0->DATA |= TSI_DATA_SWTS_MASK;
-
-    	/**
-    	 * Wait for scan to complete 32 times
-    	 */
-    	while(!(TSI0->GENCS & TSI_GENCS_EOSF_MASK));
-
-    	/**
-    	 * Now that scan has completed 32 times, store the data
-    	 */
-    	scan = TOUCH_DATA;
-
-    	/**
-    	 * Clear the end-of-scan flag
-    	 */
-    	TSI0->GENCS |= TSI_GENCS_EOSF_MASK;
-
-    	/**
-    	 * Display adjusted scan value, taking into account TOUCH_OFFSET
-    	 */
-    	 PRINTF("Scanned value = %d\r\n", scan - TOUCH_OFFSET);
-    }
 
     /**
      *  Enter blink_sequence which contains an infinite loop

@@ -86,7 +86,7 @@
 									}while(0)
 
 /**
- * \fn void init_onboard_leds (void)
+ * \fn void init_onboard_leds
  * \brief Initialize all 3 on-board LEDs as GPIO outputs and turn them all off. Referenced operations from https://github.com/alexander-g-dean/ESF/blob/master/NXP/Code/Chapter_2/Source/main.c
  * \param N/A
  * \return N/A
@@ -188,6 +188,81 @@ void init_onboard_leds(void){
 	DELAY_100_MSEC();
 }
 
+ /**
+  * \fn void blink_sequence
+  * \brief Blink LED in specific sequence. Color of LED in sequence will be determined by user's touch on the capacitive touch slider. Referenced operations from https://github.com/alexander-g-dean/ESF/blob/master/NXP/Code/Chapter_2/Source/main.c
+  * \param N/A
+  * \return N/A
+  *
+  * \detail The LED blink sequence will be:
+  * 	- ON for 500 msec, OFF for 500 msec
+  * 	- ON for 1000 msec, OFF for 500 msec
+  * 	- ON for 2000 msec, OFF for 500 msec
+  * 	- ON for 3000 msec, OFF for 500 msec
+  * 	- Repeat
+  */
+ void blink_sequence(void){
+	/**
+	 *  Force the counter to be placed into memory
+	 */
+	volatile static int i;
+
+	/**
+	 * Initially the LED will be white
+	 */
+	RED_LED_ON();
+	GRN_LED_ON();
+	BLU_LED_ON();
+
+	while(1){
+		/**
+		 * ON for 500 msec, OFF for 500 msec
+		 * ON for 1000 msec, OFF for 500 msec
+		 * ON for 2000 msec, OFF for 500 msec
+		 * ON for 3000 msec, OFF for 500 msec
+		 *
+		 */
+		RED_LED_ON();
+		GRN_LED_ON();
+		BLU_LED_ON();
+		DELAY_500_MSEC();
+		RED_LED_OFF();
+		GRN_LED_OFF();
+		BLU_LED_OFF();
+		DELAY_500_MSEC();
+
+		RED_LED_ON();
+		GRN_LED_ON();
+		BLU_LED_ON();
+		DELAY_1_SEC();
+		RED_LED_OFF();
+		GRN_LED_OFF();
+		BLU_LED_OFF();
+		DELAY_500_MSEC();
+
+		RED_LED_ON();
+		GRN_LED_ON();
+		BLU_LED_ON();
+		DELAY_1_SEC();
+		DELAY_1_SEC();
+		RED_LED_OFF();
+		GRN_LED_OFF();
+		BLU_LED_OFF();
+		DELAY_500_MSEC();
+
+		RED_LED_ON();
+		GRN_LED_ON();
+		BLU_LED_ON();
+		DELAY_1_SEC();
+		DELAY_1_SEC();
+		DELAY_1_SEC();
+		RED_LED_OFF();
+		GRN_LED_OFF();
+		BLU_LED_OFF();
+		DELAY_500_MSEC();
+	}
+ }
+
 /*
  * @brief   Application entry point.
  */
@@ -212,27 +287,10 @@ int main(void) {
      */
     init_onboard_leds();
 
-    /* Enter an infinite loop, just incrementing a counter. */
-    while(1) {
+    /**
+     *  Enter blink_sequence which contains an infinite loop
+     */
+    blink_sequence();
 
-    	//RED_LED_TOGGLE();
-    	//GRN_LED_TOGGLE();
-    	//BLU_LED_TOGGLE();
-
-    	i = 0;
-
-    	/**
-    	 * Each iteration in this loop does:
-    	 * 	- 1 ldr (2 clock cycles)
-    	 * 	- 1 nop (1 clock cycle)
-    	 *
-    	 * Operation is estimated to run on max frequency 48 MHz divided by 5 (~9.6 MHz)
-    	 */
-    	while((i++) < ITERATIONS_FOR_1_SEC){
-            /* 'Dummy' NOP to allow source level single stepping of
-                tight while() loop */
-            __asm volatile ("nop");
-    	}
-    }
     return 0 ;
 }

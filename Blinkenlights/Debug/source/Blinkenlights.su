@@ -1,2 +1,2 @@
-../source/Blinkenlights.c:84:6:init_onboard_leds	8	static
-../source/Blinkenlights.c:126:5:main	8	static
+../source/Blinkenlights.c:107:6:init_onboard_leds	8	static
+../source/Blinkenlights.c:202:5:main	8	static

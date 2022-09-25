@@ -61,6 +61,29 @@
 #define CLK_FREQ_IN_HZ				(48000000/5)
 #define CLK_CYCLES_PER_ITERATION	(3)
 #define ITERATIONS_FOR_1_SEC		(CLK_FREQ_IN_HZ/CLK_CYCLES_PER_ITERATION)
+#define ITERATIONS_FOR_500_MSEC		(ITERATIONS_FOR_1_SEC/2)
+#define ITERATIONS_FOR_100_MSEC		(ITERATIONS_FOR_1_SEC/10)
+#define DELAY_1_SEC()				do{\
+										i = 0;\
+										while((i++) < ITERATIONS_FOR_1_SEC){\
+											__asm volatile ("nop");\
+										}\
+										i = 0;\
+									}while(0)
+#define DELAY_500_MSEC()			do{\
+										i = 0;\
+										while((i++) < ITERATIONS_FOR_500_MSEC){\
+											__asm volatile ("nop");\
+										}\
+										i = 0;\
+									}while(0)
+#define DELAY_100_MSEC()			do{\
+										i = 0;\
+										while((i++) < ITERATIONS_FOR_100_MSEC){\
+											__asm volatile ("nop");\
+										}\
+										i = 0;\
+									}while(0)
 
 /**
  * \fn void init_onboard_leds (void)
@@ -83,6 +106,11 @@
  */
 void init_onboard_leds(void){
     /**
+     *  Force the counter to be placed into memory
+     */
+    volatile static int i;
+
+	/**
      * Enable clock to Port B for red + green on-board LEDs
      * Enable clock to Port D for blue on-board LED
      *
@@ -118,6 +146,46 @@ void init_onboard_leds(void){
     RED_LED_OFF();
     GRN_LED_OFF();
     BLU_LED_OFF();
+
+    /**
+     * Turn red LED on for 500 msec, and then off for 100 msec
+     * Turn green LED on for 500 msec, and then off for 100 msec
+     * Turn blue LED on for 500 msec, and then off for 100 msec
+     * Turn white LED (red + green + blue) on for 100 msec, and then off for 100 msec
+     * Turn white LED (red + green + blue) on for 100 msec, and then off for 100 msec
+     */
+    RED_LED_ON();
+    DELAY_500_MSEC();
+	RED_LED_OFF();
+	DELAY_100_MSEC();
+
+	GRN_LED_ON();
+	DELAY_500_MSEC();
+	GRN_LED_OFF();
+	DELAY_100_MSEC();
+
+	BLU_LED_ON();
+	DELAY_500_MSEC();
+	BLU_LED_OFF();
+	DELAY_100_MSEC();
+
+	RED_LED_ON();
+	GRN_LED_ON();
+	BLU_LED_ON();
+	DELAY_100_MSEC();
+	RED_LED_OFF();
+	GRN_LED_OFF();
+	BLU_LED_OFF();
+	DELAY_100_MSEC();
+
+	RED_LED_ON();
+	GRN_LED_ON();
+	BLU_LED_ON();
+	DELAY_100_MSEC();
+	RED_LED_OFF();
+	GRN_LED_OFF();
+	BLU_LED_OFF();
+	DELAY_100_MSEC();
 }
 
 /*
@@ -147,9 +215,9 @@ int main(void) {
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
 
-    	RED_LED_TOGGLE();
-    	GRN_LED_TOGGLE();
-    	BLU_LED_TOGGLE();
+    	//RED_LED_TOGGLE();
+    	//GRN_LED_TOGGLE();
+    	//BLU_LED_TOGGLE();
 
     	i = 0;
 

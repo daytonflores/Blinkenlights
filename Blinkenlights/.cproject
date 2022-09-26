@@ -106,7 +106,7 @@
 								<option id="com.crt.advproject.gcc.fpu.117415915" name="Floating point" superClass="com.crt.advproject.gcc.fpu" useByScannerDiscovery="true" value="com.crt.advproject.gcc.fpu.none" valueType="enumerated"/>
 								<option id="com.crt.advproject.gcc.thumb.1135229527" name="Thumb mode" superClass="com.crt.advproject.gcc.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="com.crt.advproject.gcc.arch.132389046" name="Architecture" superClass="com.crt.advproject.gcc.arch" useByScannerDiscovery="true" value="com.crt.advproject.gcc.target.cm0plus" valueType="enumerated"/>
-								<option id="com.crt.advproject.c.misc.dialect.300753898" name="Language standard" superClass="com.crt.advproject.c.misc.dialect" useByScannerDiscovery="true"/>
+								<option id="com.crt.advproject.c.misc.dialect.300753898" name="Language standard" superClass="com.crt.advproject.c.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.gnu99" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.dialect.flags.1126714305" name="Other dialect flags" superClass="gnu.c.compiler.option.dialect.flags" useByScannerDiscovery="true"/>
 								<option id="gnu.c.compiler.option.preprocessor.nostdinc.1759489954" name="Do not search system directories (-nostdinc)" superClass="gnu.c.compiler.option.preprocessor.nostdinc" useByScannerDiscovery="false"/>
 								<option id="gnu.c.compiler.option.preprocessor.preprocess.1300774420" name="Preprocess only (-E)" superClass="gnu.c.compiler.option.preprocessor.preprocess" useByScannerDiscovery="false"/>
@@ -422,7 +422,7 @@
 							<tool id="com.crt.advproject.gcc.exe.release.1812871217" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.release">
 								<option id="com.crt.advproject.gcc.thumb.1230686077" name="Thumb mode" superClass="com.crt.advproject.gcc.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="com.crt.advproject.gcc.arch.522389674" name="Architecture" superClass="com.crt.advproject.gcc.arch" useByScannerDiscovery="true" value="com.crt.advproject.gcc.target.cm0plus" valueType="enumerated"/>
-								<option id="com.crt.advproject.c.misc.dialect.823724719" name="Language standard" superClass="com.crt.advproject.c.misc.dialect" useByScannerDiscovery="true"/>
+								<option id="com.crt.advproject.c.misc.dialect.823724719" name="Language standard" superClass="com.crt.advproject.c.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.gnu99" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.dialect.flags.1371588854" name="Other dialect flags" superClass="gnu.c.compiler.option.dialect.flags" useByScannerDiscovery="true"/>
 								<option id="gnu.c.compiler.option.preprocessor.nostdinc.2022771457" name="Do not search system directories (-nostdinc)" superClass="gnu.c.compiler.option.preprocessor.nostdinc" useByScannerDiscovery="false"/>
 								<option id="gnu.c.compiler.option.preprocessor.preprocess.1190525757" name="Preprocess only (-E)" superClass="gnu.c.compiler.option.preprocessor.preprocess" useByScannerDiscovery="false"/>
@@ -499,7 +499,7 @@
 								<option id="com.crt.advproject.gcc.specs.423334536" name="Specs" superClass="com.crt.advproject.gcc.specs" useByScannerDiscovery="false"/>
 								<option id="com.crt.advproject.gcc.config.1453576426" name="Obsolete (Config)" superClass="com.crt.advproject.gcc.config" useByScannerDiscovery="false"/>
 								<option id="com.crt.advproject.gcc.store.1151747151" name="Obsolete (Store)" superClass="com.crt.advproject.gcc.store" useByScannerDiscovery="false"/>
-								<option id="com.crt.advproject.gcc.exe.release.option.optimization.level.109752755" superClass="com.crt.advproject.gcc.exe.release.option.optimization.level" useByScannerDiscovery="true" value="gnu.c.optimization.level.none" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.exe.release.option.optimization.level.109752755" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.release.option.optimization.level" useByScannerDiscovery="true" value="gnu.c.optimization.level.none" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.input.230508706" superClass="com.crt.advproject.compiler.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gas.exe.release.1104022031" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.release">

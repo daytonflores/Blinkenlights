@@ -252,35 +252,65 @@ void init_onboard_leds(void){
      * Turn white LED (red + green + blue) on for 100 msec, and then off for 100 msec
      * Turn white LED (red + green + blue) on for 100 msec, and then off for 100 msec
      */
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
     LED_ON(red);
 	for(i = 0; i < 5; i++){
 		DELAY_100_MSEC();
 	}
 	LED_OFF(red);
+#ifdef DEBUG
+	PRINTF("START TIMER 100\r\n");
+#endif
 	DELAY_100_MSEC();
 
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
     LED_ON(green);
 	for(i = 0; i < 5; i++){
 		DELAY_100_MSEC();
 	}
     LED_ON(green);
+#ifdef DEBUG
+	PRINTF("START TIMER 100\r\n");
+#endif
 	DELAY_100_MSEC();
 
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
     LED_ON(blue);
 	for(i = 0; i < 5; i++){
 		DELAY_100_MSEC();
 	}
     LED_ON(blue);
+#ifdef DEBUG
+	PRINTF("START TIMER 100\r\n");
+#endif
 	DELAY_100_MSEC();
 
 	LED_ON(white);
+#ifdef DEBUG
+	PRINTF("START TIMER 100\r\n");
+#endif
 	DELAY_100_MSEC();
 	LED_OFF(white);
+#ifdef DEBUG
+	PRINTF("START TIMER 100\r\n");
+#endif
 	DELAY_100_MSEC();
 
 	LED_ON(white);
+#ifdef DEBUG
+	PRINTF("START TIMER 100\r\n");
+#endif
 	DELAY_100_MSEC();
 	LED_OFF(white);
+#ifdef DEBUG
+	PRINTF("START TIMER 100\r\n");
+#endif
 	DELAY_100_MSEC();
 }
 
@@ -378,37 +408,61 @@ void init_onboard_leds(void){
 	onboard_led = white;
 	onboard_led_prev = white;
 	LED_ON(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 	for(i = 0; i < 5; i++){
 		DELAY_100_MSEC();
 	}
 	LED_OFF(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 	for(i = 0; i < 5; i++){
 		DELAY_100_MSEC();
 	}
 
 	LED_ON(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 1000\r\n");
+#endif
 	for(i = 0; i < 10; i++){
 		DELAY_100_MSEC();
 	}
 	LED_OFF(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 	for(i = 0; i < 5; i++){
 		DELAY_100_MSEC();
 	}
 
 	LED_ON(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 2000\r\n");
+#endif
 	for(i = 0; i < 20; i++){
 		DELAY_100_MSEC();
 	}
 	LED_OFF(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 	for(i = 0; i < 5; i++){
 		DELAY_100_MSEC();
 	}
 
 	LED_ON(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 3000\r\n");
+#endif
 	for(i = 0; i < 30; i++){
 		DELAY_100_MSEC();
 	}
 	LED_OFF(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 	for(i = 0; i < 5; i++){
 		DELAY_100_MSEC();
 	}
@@ -433,6 +487,9 @@ void init_onboard_leds(void){
 #endif
 
 		LED_ON(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
@@ -447,6 +504,9 @@ void init_onboard_leds(void){
 #endif
 		}
 		LED_OFF(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
@@ -462,6 +522,9 @@ void init_onboard_leds(void){
 		}
 
 		LED_ON(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 1000\r\n");
+#endif
 		for(i = 0; i < 10; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
@@ -476,6 +539,9 @@ void init_onboard_leds(void){
 #endif
 		}
 		LED_OFF(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
@@ -491,6 +557,9 @@ void init_onboard_leds(void){
 		}
 
 		LED_ON(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 2000\r\n");
+#endif
 		for(i = 0; i < 20; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
@@ -505,6 +574,9 @@ void init_onboard_leds(void){
 #endif
 		}
 		LED_OFF(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
@@ -520,6 +592,9 @@ void init_onboard_leds(void){
 		}
 
 		LED_ON(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 3000\r\n");
+#endif
 		for(i = 0; i < 30; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
@@ -534,6 +609,9 @@ void init_onboard_leds(void){
 #endif
 		}
 		LED_OFF(onboard_led);
+#ifdef DEBUG
+	PRINTF("START TIMER 500\r\n");
+#endif
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();

@@ -165,7 +165,6 @@
 											LED_ON(onboard_led);\
 										}\
 										\
-										PRINTF("Scanned value = %d\r\n", scanned_value);\
 									}while(0)
 
 #define CLK_FREQ_IN_HZ				(48000000/5)
@@ -423,58 +422,130 @@ void init_onboard_leds(void){
 		 *
 		 */
 		GET_TOUCH();
+#ifdef DEBUG
+		PRINTF("SLIDER VALUE %d\r\n", scanned_value);
+#endif
 		GET_LED_COLOR();
+#ifdef DEBUG
+		if(onboard_led != onboard_led_prev){
+			PRINTF("CHANGE LED TO %s\r\n", (onboard_led == red) ? "RED" : ((onboard_led == green) ? "GREEN" : ((onboard_led == blue) ? "BLUE" : "?")));
+		}
+#endif
 
 		LED_ON(onboard_led);
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
+#ifdef DEBUG
+			PRINTF("SLIDER VALUE %d\r\n", scanned_value);
+#endif
 			GET_LED_COLOR();
+#ifdef DEBUG
+			if(onboard_led != onboard_led_prev){
+				PRINTF("CHANGE LED TO %s\r\n", (onboard_led == red) ? "RED" : ((onboard_led == green) ? "GREEN" : ((onboard_led == blue) ? "BLUE" : "?")));
+			}
+#endif
 		}
 		LED_OFF(onboard_led);
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
+#ifdef DEBUG
+			PRINTF("SLIDER VALUE %d\r\n", scanned_value);
+#endif
 			GET_LED_COLOR();
+#ifdef DEBUG
+			if(onboard_led != onboard_led_prev){
+				PRINTF("CHANGE LED TO %s\r\n", (onboard_led == red) ? "RED" : ((onboard_led == green) ? "GREEN" : ((onboard_led == blue) ? "BLUE" : "?")));
+			}
+#endif
 		}
 
 		LED_ON(onboard_led);
 		for(i = 0; i < 10; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
+#ifdef DEBUG
+			PRINTF("SLIDER VALUE %d\r\n", scanned_value);
+#endif
 			GET_LED_COLOR();
+#ifdef DEBUG
+			if(onboard_led != onboard_led_prev){
+				PRINTF("CHANGE LED TO %s\r\n", (onboard_led == red) ? "RED" : ((onboard_led == green) ? "GREEN" : ((onboard_led == blue) ? "BLUE" : "?")));
+			}
+#endif
 		}
 		LED_OFF(onboard_led);
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
+#ifdef DEBUG
+			PRINTF("SLIDER VALUE %d\r\n", scanned_value);
+#endif
 			GET_LED_COLOR();
+#ifdef DEBUG
+			if(onboard_led != onboard_led_prev){
+				PRINTF("CHANGE LED TO %s\r\n", (onboard_led == red) ? "RED" : ((onboard_led == green) ? "GREEN" : ((onboard_led == blue) ? "BLUE" : "?")));
+			}
+#endif
 		}
 
 		LED_ON(onboard_led);
 		for(i = 0; i < 20; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
+#ifdef DEBUG
+			PRINTF("SLIDER VALUE %d\r\n", scanned_value);
+#endif
 			GET_LED_COLOR();
+#ifdef DEBUG
+			if(onboard_led != onboard_led_prev){
+				PRINTF("CHANGE LED TO %s\r\n", (onboard_led == red) ? "RED" : ((onboard_led == green) ? "GREEN" : ((onboard_led == blue) ? "BLUE" : "?")));
+			}
+#endif
 		}
 		LED_OFF(onboard_led);
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
+#ifdef DEBUG
+			PRINTF("SLIDER VALUE %d\r\n", scanned_value);
+#endif
 			GET_LED_COLOR();
+#ifdef DEBUG
+			if(onboard_led != onboard_led_prev){
+				PRINTF("CHANGE LED TO %s\r\n", (onboard_led == red) ? "RED" : ((onboard_led == green) ? "GREEN" : ((onboard_led == blue) ? "BLUE" : "?")));
+			}
+#endif
 		}
 
 		LED_ON(onboard_led);
 		for(i = 0; i < 30; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
+#ifdef DEBUG
+			PRINTF("SLIDER VALUE %d\r\n", scanned_value);
+#endif
 			GET_LED_COLOR();
+#ifdef DEBUG
+			if(onboard_led != onboard_led_prev){
+				PRINTF("CHANGE LED TO %s\r\n", (onboard_led == red) ? "RED" : ((onboard_led == green) ? "GREEN" : ((onboard_led == blue) ? "BLUE" : "?")));
+			}
+#endif
 		}
 		LED_OFF(onboard_led);
 		for(i = 0; i < 5; i++){
 			DELAY_100_MSEC();
 			GET_TOUCH();
+#ifdef DEBUG
+			PRINTF("SLIDER VALUE %d\r\n", scanned_value);
+#endif
 			GET_LED_COLOR();
+#ifdef DEBUG
+			if(onboard_led != onboard_led_prev){
+				PRINTF("CHANGE LED TO %s\r\n", (onboard_led == red) ? "RED" : ((onboard_led == green) ? "GREEN" : ((onboard_led == blue) ? "BLUE" : "?")));
+			}
+#endif
 		}
 	}
  }
@@ -492,8 +563,6 @@ int main(void) {
     /* Init FSL debug console. */
     BOARD_InitDebugConsole();
 #endif
-
-    PRINTF("Hello World\r\n");
 
     /**
      * Initialize all 3 on-board LEDs (red, green, blue)

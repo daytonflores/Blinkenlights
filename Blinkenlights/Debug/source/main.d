@@ -1,4 +1,4 @@
-source/Blinkenlights.o source/Blinkenlights.d: ../source/Blinkenlights.c \
+source/main.o source/main.d: ../source/main.c \
  C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\board/board.h \
  C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\board/clock_config.h \
  C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\drivers/fsl_common.h \
@@ -17,7 +17,8 @@ source/Blinkenlights.o source/Blinkenlights.d: ../source/Blinkenlights.c \
  C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\board/pin_mux.h \
  C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\board/clock_config.h \
  C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\CMSIS/MKL25Z4.h \
- C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\utilities/fsl_debug_console.h
+ C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\utilities/fsl_debug_console.h \
+ ../source/led.h ../source/touch.h ../source/delay.h
 C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\board/board.h:
 C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\board/clock_config.h:
 C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\drivers/fsl_common.h:
@@ -37,3 +38,6 @@ C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenligh
 C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\board/clock_config.h:
 C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\CMSIS/MKL25Z4.h:
 C:\Users\dayton.flores\Documents\MCUXpressoIDE_11.6.0_8187\workspace\Blinkenlights\utilities/fsl_debug_console.h:
+../source/led.h:
+../source/touch.h:
+../source/delay.h:
